@@ -1,10 +1,8 @@
 package com.henry.clipping
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.Path
+import android.graphics.*
+import android.os.Build
 import android.util.AttributeSet
 import android.view.View
 
@@ -99,6 +97,38 @@ class ClippedView @JvmOverloads constructor(
     }
 
     private fun drawDifferenceClippingExample(canvas: Canvas) {
+        canvas.save()
+        // Move the origin to the right for the next rectangle.
+        canvas.translate(columnTwo, rowOne)
+        // Use the subtraction of two clipping rectangles to create a frame.
+        canvas.clipRect(
+            rectInset,
+            rectInset,
+            clipRectRight - rectInset,
+            clipRectBottom - rectInset
+        )
+        // The method clipRect(float, float, float, float, Region.Op
+        // .DIFFERENCE) was deprecated in API level 26. The recommended
+        // alternative method is clipOutRect(float, float, float, float),
+        // which is currently available in API level 26 and higher.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+            canvas.clipRect(
+                2 * rectInset,
+                2 * rectInset,
+                clipRectRight - 2 * rectInset,
+                clipRectBottom - 2 * rectInset,
+                Region.Op.DIFFERENCE
+            )
+        else {
+            canvas.clipOutRect(
+                2 * rectInset,
+                2 * rectInset,
+                clipRectRight - 2 * rectInset,
+                clipRectBottom - 2 * rectInset
+            )
+        }
+        drawClippedRectangle(canvas)
+        canvas.restore()
     }
 
     private fun drawCircularClippingExample(canvas: Canvas) {
